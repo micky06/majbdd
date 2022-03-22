@@ -1,89 +1,86 @@
-// import './App.css';
+import React, { useState } from 'react';
+import * as XLSX from 'xlsx';
+import sqlite3 from 'sqlite3';
 
-// function App() {
-//   return (
-//     <div className="App">
-//      hello
-//     </div>
-//   );
-// }
+function App() {
+   
+   const dbName = 'suivi_prod.db';
+   const maj = [];
+   const [items, setItems] = useState([]);
+   const obj = {
+      rame: '',
+      PeriodA: '',
+      PeriodB: '',
+      PeriodC: '',
+      PeriodD: '',
+   }
+   const readExcel = (file) => {
 
-// export default App;
-// import { useEffect, useRef, useState } from "react";
-// const reader = require("xlsx");
-// import "./App.css";
+      const promise = new Promise((res, rej) => {
 
-// export default function App() {
-//   const [htmlData, setHtmlData] = useState("");
-//   const [resultat, setResultat] = useState("");
+         const fileReader = new FileReader();
+         fileReader.readAsArrayBuffer(file)
+         fileReader.onload = (e) => {
+            const bufferArray = e.target.result;
 
-//   const inputref = useRef();
-//   const containerRef = useRef();
-//   let parsedData = [];
+            let wsname = '';
+            const wb = XLSX.read(bufferArray, { type: 'buffer' });
+            for (let i = 0; i < wb.SheetNames.length; i++) {
+               wsname = wb.SheetNames[i];
+               if (wsname === "Affectation_Parc") {
+                  console.log(`l'onglet est en position : ${i}`);
+                  const ws = wb.Sheets[wsname];
+                  const data = XLSX.utils.sheet_to_json(ws);
 
-//   const handleOnChange = async (e) => {
-//     e.preventDefault();
+                  res(data);
+               }
 
-//     // console.log(e.target.files[0]);
+            }
+         };
 
-//     const reader = new FileReader();
+         fileReader.onerror = (error) => {
+            rej(error);
+         };
+      });
 
-//     reader.onload = (e) => {
-//       // var data = new Uint8Array(e.target.result);
-//       var data = e.target.result;
-//       var workbook = XLSX.read(data, { type: "array" });
-//       const name = workbook.SheetNames[4];
-//       const workSheet = workbook.Sheets[name];
+      promise.then((d) => {
+         setItems(d);
 
-//       parsedData = XLSX.utils.sheet_to_json(workSheet, {
-//         header: 1
-//       });
-//       reader.readAsArrayBuffer(e.target.files[0]);
+      });
+   }
 
-//       setResultat((preResultat) => parsedData);
+   // let db = new sqlite3.Database(dbName, err => {
 
-//       // setHtmlData(htmlStr);
+   //    if(err)
+   //       throw err
+      
+   //    console.log(`Database ${dbName} connected`);
+   // });
 
-//       // const parsedData = XLSX.utils.sheet_(workSheet);
-//     };
-//     // console.log(resultat);
-//     for (let i of parsedData) {
-//       console.log(parsedData);
-//     }
-//   };
-
-//   useEffect(() => {
-//     if (!containerRef) return;
-
-//     containerRef.current.innerHTML = htmlData;
-//   }, [htmlData]);
-
-//   return (
-//     <>
-//       <input type="file" ref={inputref} onChange={handleOnChange} />
-//       <div className="table-container" ref={containerRef}></div>
-//     </>
-//   );
-// }
-
-// Requiring the module
-const reader = require('xlsx')
-  
-// Reading our test file
-const file = reader.readFile('../Test.xlsx')
-  
-let data = []
-  
-const sheets = file.SheetNames
-  
-// for(let i = 0; i < sheets.length; i++)
-// {
-   const temp = reader.utils.sheet_to_json(
-        file.Sheets[file.SheetNames[4]])
-   temp.forEach((res) => {
-      data.push(res)
+   items.map((line)=>{
+      obj.rame = line["N° Rame"]
+      obj.PeriodA = line["Axe Période A année en cours"]
+      obj.PeriodB = line["Axe Période B année en cours"]
+      obj.PeriodC = line["Axe Période C année en cours"]
+      obj.PeriodD = line["Axe Période D année en cours"]
+      
+      maj.push(obj)
+      console.log(maj);
    })
-// }
-  
-// Printing data
-console.log(data)
+   return (
+      <div>
+         <input type='file' onChange={(e) => {
+            const file = e.target.files[0];
+            readExcel(file);
+         }}
+         />
+
+      </div>
+   )
+
+
+
+
+}
+
+export default App;
