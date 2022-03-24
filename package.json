@@ -1,0 +1,27 @@
+{
+  "name": "majbdd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/micky06/majbdd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/micky06/majbdd/issues"
+  },
+  "homepage": "https://github.com/micky06/majbdd#readme",
+  "dependencies": {
+    "FileReader": "^0.10.2",
+    "nodemon": "^2.0.15",
+    "sqlite3": "^5.0.2",
+    "xlsx": "^0.18.5"
+  }
+}
