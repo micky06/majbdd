@@ -57,7 +57,6 @@ db.serialize(() => {
 	// rames.forEach(r => {
 	// 	`INSERT INTO gerance (rame,a,b,c,d,annee) VALUES (${r.rame},${r.PeriodA}, ${r.PeriodB}, ${r.PeriodC}, ${r.PeriodD}, ${new Date().getFullYear()})`
 	// })
-
 })
 
 function jsonToObject(row) {
