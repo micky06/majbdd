@@ -3,6 +3,17 @@ const sqlite3 = require('sqlite3').verbose();
 
 const dbName = 'suivi_prod.db';
 
+class Rame {
+	constructor(rame, a, b, c, d) {
+		this.rame = rame;
+		this.a = a;
+		this.b = b;
+		this.c = c;
+		this.d = d;
+		this.date = new Date().getFullYear();
+	}
+}
+
 const maj = [];
 let items = [];
 
@@ -43,20 +54,19 @@ db.serialize(() => {
 });
 
 db.serialize(() => {
-	/*
-	let placeholders = languages.map((language) => '(?)').join(',');
-	let sql = 'INSERT INTO langs(name) VALUES ' + placeholders;
-	 */
 	const rameSql = rames.map(r => {
-		if (r.rame === undefined) {
+		if (r?.rame) {
+			return new Rame(r.rame, r.PeriodA, r.PeriodB, r.PeriodC, r.PeriodD);
+		}
+	})
+	const stmt = db.prepare(`INSERT INTO gerance (rame,a,b,c,d,annee) VALUES (?,?,?,?,?,?)`)
+	rameSql.forEach(r => {
+		if (r) {
+			stmt.run(r.rame, r.a, r.b, r.c, r.d, r.date);
 			console.log(r);
 		}
-		return `(${r.rame},${r.PeriodA}, ${r.PeriodB}, ${r.PeriodC}, ${r.PeriodD}, ${new Date().getFullYear()})`
 	})
-	console.log(rameSql)
-	// rames.forEach(r => {
-	// 	`INSERT INTO gerance (rame,a,b,c,d,annee) VALUES (${r.rame},${r.PeriodA}, ${r.PeriodB}, ${r.PeriodC}, ${r.PeriodD}, ${new Date().getFullYear()})`
-	// })
+	stmt.finalize();
 })
 
 function jsonToObject(row) {
